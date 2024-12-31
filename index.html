@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    <canvas id="canvas"> </canvas>
+  </body>
+
+  <style>
+    body {
+      overflow: hidden;
+      margin: 0;
+      overflow-y: hidden;
+    }
+  </style>
+
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    const fitcontent = () => {
+      canvas.style.width = "100vw";
+      canvas.style.height = "100vh";
+
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+
+    fitcontent();
+
+    const stars = [];
+
+    const Update = () => {
+      // background
+
+      const background = ctx.createLinearGradient(canvas.width / 2, 0, canvas.width / 2, canvas.height);
+      background.addColorStop(0, "rgba(2,0,36,1)");
+      background.addColorStop(0.59, "rgba(7,7,83,1)");
+      background.addColorStop(1, "rgba(34,75,97,1)");
+      //background.addColorStop(1, "rgba(0,108,134,1)");
+
+      // Fill with gradient
+      ctx.fillStyle = background;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      gustOfWind();
+
+      starLogic();
+    };
+
+    const drawStar = (star) => {
+      ctx.fillStyle = "#FFFFFF";
+      ctx.fillRect(star.x, star.y, canvas.width / 1000, canvas.width / 1000);
+    };
+
+    const genStar = () => {
+      stars.push({
+        id: stars.length,
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        velocity_x: 2,
+        velocity_y: 2,
+      });
+    };
+
+    const starLogic = () => {
+      for (let i = 0; i < stars.length; i++) {
+        const star = stars[i];
+
+        star.x > canvas.width ? (star.x = 0) : star.x < 0 ? (star.x = canvas.width) : (star.x += star.velocity_x);
+        star.y > canvas.height ? (star.y = 0) : (star.y += star.velocity_y);
+
+        star.velocity_x += (Math.random() * 0.2 - 0.1) * Math.random() + wind * Math.random() * 0.3;
+        star.velocity_y += (Math.random() * 0.2 - 0.1) * Math.random();
+
+        star.x += star.velocity_x;
+        star.y += star.velocity_y;
+
+        if (star.velocity_x > 2.5) {
+          star.velocity_x -= 0.3;
+        }
+
+        if (star.velocity_x > 3.5) {
+          star.velocity_x -= 1;
+        }
+
+        if (star.velocity_y > 3.5) {
+          star.velocity_y -= 0.3;
+        }
+
+        if (star.velocity_y < -0.1) {
+          star.velocity_y += 0.2;
+        }
+
+        drawStar(star);
+      }
+    };
+
+    const Init = (StarsAmount) => {
+      for (let i = 0; i < StarsAmount; i++) {
+        genStar();
+      }
+    };
+
+    probability = 0;
+    wind = 0;
+
+    const gustOfWind = () => {
+      probability += 0.0002;
+
+      if (Math.random() * 100 < probability) {
+        wind = Math.random() * 3 - 1;
+
+        probability = 0;
+      }
+
+      if (wind > 0.1) {
+        wind -= Math.random() * 0.02;
+      }
+
+      if (-0.1 < wind < 0.1) {
+        wind = 0;
+      }
+
+      if (wind < -0.1) {
+        wind += Math.random() * 0.02;
+      }
+
+      console.log(wind);
+    };
+
+    Init(75);
+
+    setInterval(Update, 15);
+  </script>
+</html>
